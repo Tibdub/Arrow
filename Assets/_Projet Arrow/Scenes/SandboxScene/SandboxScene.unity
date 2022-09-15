@@ -227,7 +227,6 @@ GameObject:
   - component: {fileID: 377427270}
   - component: {fileID: 377427273}
   - component: {fileID: 377427272}
-  - component: {fileID: 377427271}
   m_Layer: 0
   m_Name: Bow
   m_TagString: Untagged
@@ -249,19 +248,6 @@ Transform:
   m_Father: {fileID: 1493795184}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &377427271
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 377427269}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &377427272
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -715,11 +701,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1200695166}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.95, y: 0, z: -1.42}
+  m_LocalPosition: {x: -0.95, y: -2.18, z: -1.42}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1289180573 stripped
 Transform:
@@ -959,7 +945,6 @@ GameObject:
   - component: {fileID: 1493795181}
   - component: {fileID: 1493795180}
   - component: {fileID: 1493795179}
-  - component: {fileID: 1493795185}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -980,7 +965,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 1493795180}
+  playerTransform: {fileID: 1493795184}
+  cursorTransform: {fileID: 1200695169}
   moveSpeed: 10
+  mainCamera: {fileID: 1058475084}
 --- !u!54 &1493795180
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1073,24 +1061,8 @@ Transform:
   m_Children:
   - {fileID: 377427270}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1493795185
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1493795178}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d61095629c69fa14e9118cf07819186a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainCamera: {fileID: 1058475084}
-  cursorTransform: {fileID: 1200695169}
-  rb: {fileID: 1493795180}
-  playerTransform: {fileID: 1493795184}
 --- !u!1 &1651580990
 GameObject:
   m_ObjectHideFlags: 0
