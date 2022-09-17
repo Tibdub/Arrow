@@ -10,6 +10,9 @@ public class BowShoot : MonoBehaviour
     public GameObject arrowPrefab;
     public float bowPower;
 
+    public AudioSource loadingBowSound;
+    public AudioSource shootBowSound;
+
     private GameObject currentArrow;
 
     private void Update()
@@ -18,12 +21,15 @@ public class BowShoot : MonoBehaviour
         {
             Debug.Log("Chargement fleche");
             PrepareShoot();
+            loadingBowSound.Play();
         }
 
         if (Input.GetMouseButtonUp(0))
         {
             Debug.Log("Flèche tirée !");
             ShootArrow();
+            loadingBowSound.Stop();
+            shootBowSound.Play();
         }
 
         // Permet à la flèche de garder sa position d'attente (sur l'arc)
@@ -48,11 +54,12 @@ public class BowShoot : MonoBehaviour
 
     public void ShootArrow()
     {
+        // Active les colliders de la flèche
+        currentArrow.GetComponent<Arrow>().EnableColliders();
+
         // Force et direction de la flèche
         Vector3 arrowForce = playerTransform.forward * bowPower;
 
-
-        Debug.Log(arrowForce);
         // Tire la fleche
         currentArrow.GetComponent<Rigidbody>().velocity = arrowForce;
         currentArrow = null;
