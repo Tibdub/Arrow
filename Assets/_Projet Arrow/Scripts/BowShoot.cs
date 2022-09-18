@@ -19,14 +19,12 @@ public class BowShoot : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("Chargement fleche");
             PrepareShoot();
             loadingBowSound.Play();
         }
 
         if (Input.GetMouseButtonUp(0))
         {
-            Debug.Log("Flèche tirée !");
             ShootArrow();
             loadingBowSound.Stop();
             shootBowSound.Play();
@@ -44,8 +42,6 @@ public class BowShoot : MonoBehaviour
     {
         // Creation du prefab (position au milieu de l'arc / rotation de l'arc)
         currentArrow = Instantiate(arrowPrefab, bowCenter.position, bowTransform.rotation);
-        Debug.Log(bowCenter.position);
-        Debug.Log(currentArrow.GetComponent<Transform>().position);
 
         // (Optionnel) Après un delai, la fleche est completement chargée
         // ...

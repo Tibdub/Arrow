@@ -1,37 +1,105 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MovePlayer : MonoBehaviour
 {
-    [Header("Deplacement")]
-    public Rigidbody rb;
-    public Transform playerTransform;
-    public Transform cursorTransform;
-    public float moveSpeed;
-    private float vertInput;
-    private float horzInput;
-
 
     [SerializeField]
     private Camera mainCamera;
+    public TextMeshProUGUI playerSpeedText;
+    public GameObject dashImage;
+
+
+    [Header("Deplacement")]
+    public Rigidbody rb;
+    public Transform playerTransform;
+    public float inputForce;
+    public float maxSpeed;
+    private float actualSpeed;
+
+    private float vertInput;
+    private float horzInput;
+
+    [Header("Rotation")]
+    public Transform cursorTransform;
     private Vector3 mousePosition;
 
 
-    private void Update()
-    {
-        vertInput = Input.GetAxis("Vertical") * moveSpeed;
-        horzInput = Input.GetAxis("Horizontal") * moveSpeed;
+    [Header("Dash")]
+    public float dashingPower = 24f;
+    public float dashingTime = 0.2f;
+    public float dashCooldown = 1f;
+    public float momentumFactor;
+    bool keepMomentum;
 
-        PlayerRotation();
+    private bool canDash = true;
+    private bool isDashing;
+
+
+    private void Start()
+    {
+
     }
 
+    private void Update()
+    {
+        MyInput();
+        SpeedControl();
+        PlayerRotation();
+
+        ShowSpeed();
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
+        {
+            StartCoroutine(Dash());
+        }
+
+    }
 
     void FixedUpdate()
     {
+        if(!isDashing)
+            PlayerMovment();
+    }
+
+
+
+
+    // -_-_-_-_-_-_-_-_-_-_-  Déplacement -_-_-_-_-_-_-_-_-_- //
+
+    //
+    private void PlayerMovment()
+    {
+        // Déplacement du joueur (ZQSD)
         rb.velocity = (Vector3.forward * vertInput) + (Vector3.right * horzInput);
     }
 
+    // Récuperation inputs
+    private void MyInput()
+    {
+        vertInput = Input.GetAxis("Vertical") * inputForce;
+        horzInput = Input.GetAxis("Horizontal") * inputForce;
+    }
+
+    // Cap la vitesse maximale
+    private void SpeedControl()
+    {
+        Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+        // Limite la vitesse maximale
+        if(actualSpeed > maxSpeed && !isDashing)
+        {
+            Vector3 limitdVel = flatVel.normalized * maxSpeed;
+            rb.velocity = new Vector3(limitdVel.x, rb.velocity.y, limitdVel.z);
+        }
+    }
+
+
+
+    // -_-_-_-_-_-_-_-_-_-_-  Rotation  -_-_-_-_-_-_-_-_-_-_-_- //
     public void PlayerRotation()
     {
         // Récupération de la souris % à la scène
@@ -49,4 +117,76 @@ public class MovePlayer : MonoBehaviour
         // Affichage du curseur
         cursorTransform.position = mousePosition;
     }
+
+
+
+    // -_-_-_-_-_-_-_-_-_-_-   Dash   -_-_-_-_-_-_-_-_-_-_-_- //
+
+    private IEnumerator Dash()
+    {
+        Debug.Log("Debut dash");
+        dashImage.GetComponent<Image>().color = new Color32(255, 67, 67, 255);
+
+        canDash = false;
+        isDashing = true;
+
+        // Applique le dash dans la direction du déplacement, si = 0, direction du regard
+        if(rb.velocity == Vector3.zero)
+        {
+            rb.velocity = dashingPower * playerTransform.forward;
+        }
+        else
+        {
+            Debug.Log(rb.velocity.normalized);
+            rb.velocity = dashingPower * rb.velocity.normalized;
+        }
+        
+
+        // Alternative =>  rb.AddForce(dashingPower * playerTransform.forward);
+
+        yield return new WaitForSeconds(dashingTime);
+        Debug.Log("Fin dash");
+        isDashing = false;
+        keepMomentum = true;
+
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
+        dashImage.GetComponent<Image>().color = new Color32(125, 255, 66, 255);
+        Debug.Log("Cooldown dash");
+    }
+
+    // Smoothifier la fin du dash
+    /*private IEnumerator SmoothLerpMoveSpeed()
+    {
+        // Transition smooth entre la vitesse de Dash et la vitesse normale
+        float time = 0;
+        float difference = Mathf.Abs(maxSpeed - actualSpeed);
+        float startValue = actualSpeed;
+
+        float boostFactor = momentumFactor;
+
+        while (time < difference)
+        {
+            //actualSpeed = Mathf.Lerp(startValue, maxSpeed, time / difference);
+            Debug.Log(Mathf.Lerp(startValue, maxSpeed, time / difference));
+
+            time += Time.deltaTime * boostFactor;
+
+            yield return null;
+        }
+
+        actualSpeed = maxSpeed;
+        keepMomentum = false;
+    }*/
+
+
+    // -_-_-_-_-_-_-_-_-_-_-   Affichage   -_-_-_-_-_-_-_-_-_-_-_- //
+
+    public void ShowSpeed()
+    {
+        // Vitesse du joueur
+        actualSpeed = new Vector3(rb.velocity.x, 0f, rb.velocity.z).magnitude;
+        playerSpeedText.text = actualSpeed.ToString("F1");
+    }
+
 }
