@@ -7,31 +7,69 @@ public class Arrow : MonoBehaviour
 
     public Collider bodyCollider;
     public Collider headColldier;
+    public float impactForce;
 
     public Rigidbody rbArrow;
 
     public AudioSource impactSound;
 
+    private void Update()
+    {
+        Debug.Log(rbArrow.velocity);
+    }
+
+
     void OnCollisionEnter(Collision collision)
     {
-        Collider myCollider = collision.GetContact(0).thisCollider;
 
-        if (myCollider.tag == "Arrow_head")
+        // --------------  Fige la flèche  -------------- //
+        rbArrow.velocity = Vector3.zero;
+        rbArrow.isKinematic = true;
+
+        // Créé un GameObject tampon pour garder le scale de la flèche
+        GameObject sharedParent = new GameObject("Arrow Impact");
+        sharedParent.transform.position = collision.transform.position;
+        sharedParent.transform.rotation = collision.transform.rotation;
+
+        sharedParent.transform.parent = collision.gameObject.transform;
+        transform.parent = sharedParent.transform;
+
+
+        // --------------  Divers  -------------- //
+
+        // Désactive ses colliders
+        DisableColliders();
+
+        // Bruit à l'impact
+        impactSound.Play();
+
+        // Détruit la flèche après un delais
+        // ...
+        // ...
+        
+
+
+        if (collision.gameObject.CompareTag("Ennemi"))
         {
-            // Fige la flèche
+            GameObject ennemi = collision.gameObject;
             Debug.Log("Touché");
-            rbArrow.velocity = Vector3.zero;
-            rbArrow.isKinematic = true;
 
-            // Désactive ses colliders
-            DisableColliders();
+            // Applique une force a l'ennemie
+            Rigidbody rbEnnemi = collision.rigidbody;
+            rbEnnemi.constraints = RigidbodyConstraints.None;
+            rbEnnemi.useGravity = true;
 
-            // Bruit à l'impact
-            impactSound.Play();
+            rbEnnemi.AddForceAtPosition((-collision.relativeVelocity).normalized * impactForce, collision.gameObject.transform.position, ForceMode.Impulse);
+            Debug.Log( ((-collision.relativeVelocity).normalized * impactForce ). magnitude);
 
-            // Détruit la flèche après un delais
-            // ...
-            // ...
+
+            // *****   Désactive l'ennemi   ***** //
+
+
+            // Supression de champ de vision 
+            ennemi.transform.GetChild(0).gameObject.SetActive(false);
+            ennemi.GetComponent<FieldOfView>().enabled = false;
+
         }
     }
 
@@ -39,14 +77,12 @@ public class Arrow : MonoBehaviour
     public void EnableColliders()
     {
         // Active les colliders
-        bodyCollider.enabled = true;
         headColldier.enabled = true;
     }
 
     public void DisableColliders()
     {
         // Désactive les colliders
-        bodyCollider.enabled = false;
         headColldier.enabled = false;
     }
 
