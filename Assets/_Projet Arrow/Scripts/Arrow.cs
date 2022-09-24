@@ -5,18 +5,12 @@ using UnityEngine;
 public class Arrow : MonoBehaviour
 {
 
-    public Collider bodyCollider;
     public Collider headColldier;
     public float impactForce;
 
     public Rigidbody rbArrow;
 
     public AudioSource impactSound;
-
-    private void Update()
-    {
-        Debug.Log(rbArrow.velocity);
-    }
 
 
     void OnCollisionEnter(Collision collision)
@@ -60,7 +54,6 @@ public class Arrow : MonoBehaviour
             rbEnnemi.useGravity = true;
 
             rbEnnemi.AddForceAtPosition((-collision.relativeVelocity).normalized * impactForce, collision.gameObject.transform.position, ForceMode.Impulse);
-            Debug.Log( ((-collision.relativeVelocity).normalized * impactForce ). magnitude);
 
 
             // *****   Désactive l'ennemi   ***** //
@@ -71,8 +64,18 @@ public class Arrow : MonoBehaviour
             ennemi.GetComponent<FieldOfView>().enabled = false;
 
         }
+
+        StartCoroutine(Die());
     }
 
+
+    // Detruit la flèche après un timer
+    IEnumerator Die()
+    {
+        
+        yield return new WaitForSeconds(5); 
+        Destroy(gameObject);
+    }
 
     public void EnableColliders()
     {

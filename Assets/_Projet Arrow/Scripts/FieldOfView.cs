@@ -14,7 +14,7 @@ public class FieldOfView : MonoBehaviour
     public LayerMask targetMask;
     public LayerMask obstacleMask;
 
-    [HideInInspector]
+  
     public List<Transform> visibleTargets = new List<Transform>();
 
     [Header("Affichage Fow")]
@@ -25,6 +25,8 @@ public class FieldOfView : MonoBehaviour
     public MeshFilter viewMeshFilter;
     Mesh viewMesh;
 
+    [HideInInspector]
+    public bool targetIsSpoted;
 
 
     public void Start()
@@ -77,16 +79,28 @@ public class FieldOfView : MonoBehaviour
                 if (!Physics.Raycast(transform.position, dirToTarget, disToTarget,obstacleMask))
                 {
                     visibleTargets.Add(target);
+
                     // La cible est repérée, faire les actions voulues...
                     // ...
                     // ...
                 }
             }
         }
+
+        targetIsSpoted = visibleTargets.Count == 1;
+    }
+
+    public void LookAtPlayer()
+    {
+
     }
 
 
+
+
+
     // Renvoie une direction (Vector3) en partant d'un angle donné (degrés)
+    //
     public Vector3 DirFromAngle(float angleInDegrees, bool angleIsGlobal)
     {
         if (!angleIsGlobal)
@@ -99,6 +113,7 @@ public class FieldOfView : MonoBehaviour
 
 
     // Dessine le champ de vision
+    //
     void DrawFieldOfView()
     {
 
@@ -167,7 +182,6 @@ public class FieldOfView : MonoBehaviour
         viewMesh.triangles = triangles;
         viewMesh.RecalculateNormals();
     }
-
 
 
     // Permet de trouver les "bords" des obstacles détectés par le champ de vision

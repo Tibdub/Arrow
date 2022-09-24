@@ -7,6 +7,9 @@ using UnityEngine.UI;
 public class MovePlayer : MonoBehaviour
 {
 
+    public Transform bowCenter; // Debugging
+
+
     [SerializeField]
     private Camera mainCamera;
     public TextMeshProUGUI playerSpeedText;
@@ -39,13 +42,9 @@ public class MovePlayer : MonoBehaviour
     private bool isDashing;
 
 
-    private void Start()
-    {
-
-    }
-
     private void Update()
     {
+
         MyInput();
         SpeedControl();
         PlayerRotation();
@@ -61,7 +60,7 @@ public class MovePlayer : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(!isDashing)
+        if (!isDashing)
             PlayerMovment();
     }
 
@@ -118,6 +117,10 @@ public class MovePlayer : MonoBehaviour
         cursorTransform.position = mousePosition;
     }
 
+    public Vector3 GetPlayerForward()
+    {
+        return transform.forward;
+    }
 
 
     // -_-_-_-_-_-_-_-_-_-_-   Dash   -_-_-_-_-_-_-_-_-_-_-_- //
