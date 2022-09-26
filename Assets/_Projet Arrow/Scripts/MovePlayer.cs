@@ -44,9 +44,10 @@ public class MovePlayer : MonoBehaviour
 
     private void Update()
     {
-
         MyInput();
+
         SpeedControl();
+        
         PlayerRotation();
 
         ShowSpeed();
@@ -55,7 +56,6 @@ public class MovePlayer : MonoBehaviour
         {
             StartCoroutine(Dash());
         }
-
     }
 
     void FixedUpdate()
@@ -117,17 +117,11 @@ public class MovePlayer : MonoBehaviour
         cursorTransform.position = mousePosition;
     }
 
-    public Vector3 GetPlayerForward()
-    {
-        return transform.forward;
-    }
-
 
     // -_-_-_-_-_-_-_-_-_-_-   Dash   -_-_-_-_-_-_-_-_-_-_-_- //
 
     private IEnumerator Dash()
     {
-        Debug.Log("Debut dash");
         dashImage.GetComponent<Image>().color = new Color32(255, 67, 67, 255);
 
         canDash = false;
@@ -140,7 +134,6 @@ public class MovePlayer : MonoBehaviour
         }
         else
         {
-            Debug.Log(rb.velocity.normalized);
             rb.velocity = dashingPower * rb.velocity.normalized;
         }
         
@@ -148,14 +141,12 @@ public class MovePlayer : MonoBehaviour
         // Alternative =>  rb.AddForce(dashingPower * playerTransform.forward);
 
         yield return new WaitForSeconds(dashingTime);
-        Debug.Log("Fin dash");
         isDashing = false;
         keepMomentum = true;
 
         yield return new WaitForSeconds(dashCooldown);
         canDash = true;
         dashImage.GetComponent<Image>().color = new Color32(125, 255, 66, 255);
-        Debug.Log("Cooldown dash");
     }
 
     // Smoothifier la fin du dash

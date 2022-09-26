@@ -4,30 +4,30 @@ using UnityEngine;
 
 public class ShootArrow : MonoBehaviour
 {
-    public Transform bowTransform;
-    public Transform bowCenter;
+    public Transform bowTransform; // Pour la rotation de la flèche
+    public Transform bowCenter; // Pour la position de la flèche
     public GameObject arrowPrefab;
-    public float bowPower;
+    public float bowPower; // Puissance de tir
 
     public AudioSource loadingBowSound;
     public AudioSource shootBowSound;
 
-    private GameObject currentArrow;
-
+    private GameObject currentArrow; // Flèche actuellement chargée
     private Vector3 shootDir;
+
 
     void Update()
     {
-
+        // Chargement du tir
         if (Input.GetMouseButtonDown(0))
         {
             PrepareShoot();
             loadingBowSound.Play();
         }
 
+        // Tir de la flèche 
         if (Input.GetMouseButtonUp(0))
         {
-            Debug.Log("playerTransform.forward 1 " + transform.forward);
             Shoot();
 
             loadingBowSound.Stop();
@@ -45,9 +45,11 @@ public class ShootArrow : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // Récupère & affiche la direction du tir
         shootDir = transform.forward;
         Debug.DrawRay(transform.position, transform.forward * 40, Color.green);
     }
+
 
 
     public void PrepareShoot()
@@ -59,6 +61,7 @@ public class ShootArrow : MonoBehaviour
         // ...
         // ...
     }
+
 
     public void Shoot()
     {
@@ -75,9 +78,6 @@ public class ShootArrow : MonoBehaviour
         // Tire la fleche
         currentArrow.GetComponent<Rigidbody>().velocity = arrowForce;
         currentArrow = null;
-
-        Debug.Log("playerTransform.forward : " + transform.forward);
-        Debug.Log(arrowForce);
 
 
         // (Optionnel) La force de la flèche dépend si le tire est chargé complètement ou non 

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3658601848741105710}
   - component: {fileID: 3658601848743993004}
   - component: {fileID: 3658601848742954922}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Rock_Blocks_m_04 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 5435550855390910792}
   - component: {fileID: 5435550855389599690}
   - component: {fileID: 5435550855388532428}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Rock_Blocks_m_04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -172,7 +172,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8447068109483214690}
   - component: {fileID: 8402973738625640100}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -220,7 +220,7 @@ GameObject:
   - component: {fileID: 8918058125495473100}
   - component: {fileID: 8918058125492591950}
   - component: {fileID: 8918058125493650504}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Rock_Blocks_m_04 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
