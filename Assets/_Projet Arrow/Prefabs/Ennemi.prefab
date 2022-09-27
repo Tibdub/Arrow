@@ -92,6 +92,7 @@ GameObject:
   - component: {fileID: 7041258084931766292}
   - component: {fileID: 7041258084931766299}
   - component: {fileID: 7041258084931766278}
+  - component: {fileID: 4091297571445441817}
   m_Layer: 0
   m_Name: Ennemi
   m_TagString: Ennemi
@@ -158,6 +159,20 @@ MonoBehaviour:
   edgeResolveIteration: 6
   edgeDstThreshold: 0.5
   viewMeshFilter: {fileID: 4961545563305458600}
+--- !u!114 &4091297571445441817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7041258084931766297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4745c54ce3eebcf4eb91808cb9364ebd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fowScript: {fileID: 7041258084931766278}
+  playerSpoted: 0
 --- !u!1 &7041258084942973762
 GameObject:
   m_ObjectHideFlags: 0

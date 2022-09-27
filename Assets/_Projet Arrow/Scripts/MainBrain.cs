@@ -21,10 +21,4 @@ public class MainBrain : MonoBehaviour
         // Shoot()
 
     }
-
-
-    public void CheckTarget()
-    {
-        targetIsSpoted = fieldOfViewScript.targetIsSpoted;
-    }
 }

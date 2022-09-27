@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class MovePlayer : MonoBehaviour
 {
@@ -123,6 +124,7 @@ public class MovePlayer : MonoBehaviour
     private IEnumerator Dash()
     {
         dashImage.GetComponent<Image>().color = new Color32(255, 67, 67, 255);
+        transform.DOScale(new Vector3(0.8f, 0.8f, 0.8f), dashingTime).SetEase(Ease.OutCirc);
 
         canDash = false;
         isDashing = true;
@@ -141,6 +143,7 @@ public class MovePlayer : MonoBehaviour
         // Alternative =>  rb.AddForce(dashingPower * playerTransform.forward);
 
         yield return new WaitForSeconds(dashingTime);
+        transform.DOScale(new Vector3(1,1,1), dashingTime*2).SetEase(Ease.OutElastic);
         isDashing = false;
         keepMomentum = true;
 
@@ -149,6 +152,10 @@ public class MovePlayer : MonoBehaviour
         dashImage.GetComponent<Image>().color = new Color32(125, 255, 66, 255);
     }
 
+
+    // A Finir ...
+    //...
+    //...
     // Smoothifier la fin du dash
     /*private IEnumerator SmoothLerpMoveSpeed()
     {

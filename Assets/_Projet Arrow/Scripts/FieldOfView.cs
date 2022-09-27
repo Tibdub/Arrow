@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections.Concurrent;
+using DG.Tweening;
 
 public class FieldOfView : MonoBehaviour
 {
@@ -25,8 +26,10 @@ public class FieldOfView : MonoBehaviour
     public MeshFilter viewMeshFilter;
     Mesh viewMesh;
 
-    [HideInInspector]
-    public bool targetIsSpoted;
+    [Header("Target trouvée")]
+    private GameObject actualTarget;
+    private bool targetIsSpotted;
+    private bool lastTargetIsSpotted;
 
 
     public void Start()
@@ -34,8 +37,8 @@ public class FieldOfView : MonoBehaviour
         viewMesh = new Mesh();
         viewMesh.name = "View Mash";
         viewMeshFilter.mesh = viewMesh;
-        StartCoroutine("FindTargetWithDelay", detectionDelay);
     }
+
 
     public void LateUpdate()
     {
@@ -43,8 +46,7 @@ public class FieldOfView : MonoBehaviour
     }
 
 
-
-    // Detection des targets
+    /*
     IEnumerator FindTargetWithDelay(float delay)
     {
         while (true)
@@ -52,68 +54,62 @@ public class FieldOfView : MonoBehaviour
             yield return new WaitForSeconds(delay);
             FindVisibleTargets();
         }
-    }
+    }*/
 
 
     // Trouve toutes les cibles autours de lui
-    void FindVisibleTargets()
+    public bool FindVisibleTargets()
     {
         visibleTargets.Clear();
+
+        // Detection dans un périmètre circulaire
         Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRaduis, targetMask);
 
-        // Detection des cible autour de lui
         for(int i=0; i < targetsInViewRadius.Length; i++)
         {
 
             // Trouve la direction dans laquelle se trouve la cible
-            Transform target = targetsInViewRadius[i].transform;
-            Vector3 dirToTarget = (target.position - transform.position).normalized;
+            Transform targetTransform = targetsInViewRadius[i].transform;
+            Vector3 dirToTarget = (targetTransform.position - transform.position).normalized;
 
-            // La cible se trouve dans le champ de vision ?
+            // La cible se trouve dans le cone de vision ?
             if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
             {
                
-                float disToTarget = Vector3.Distance(transform.position, target.position);
+                float disToTarget = Vector3.Distance(transform.position, targetTransform.position);
 
                 // La cible ne se trouve pas derrière un obstacle ?
                 if (!Physics.Raycast(transform.position, dirToTarget, disToTarget,obstacleMask))
                 {
-                    visibleTargets.Add(target);
-
-                    // La cible est repérée, faire les actions voulues...
-                    // ...
-                    // ...
+                    // La cible est repérée.
+                    visibleTargets.Add(targetTransform);
+                    actualTarget = targetTransform.gameObject;
                 }
             }
         }
 
-        targetIsSpoted = visibleTargets.Count == 1;
-    }
-
-    public void LookAtPlayer()
-    {
-
-    }
+        // Actualise l'état de l'IA
+        lastTargetIsSpotted = targetIsSpotted;
+        targetIsSpotted = visibleTargets.Count == 1;
 
 
-
-
-
-    // Renvoie une direction (Vector3) en partant d'un angle donné (degrés)
-    //
-    public Vector3 DirFromAngle(float angleInDegrees, bool angleIsGlobal)
-    {
-        if (!angleIsGlobal)
+        // La frame ou le joueur entre dans le champ de vision
+        if(targetIsSpotted != lastTargetIsSpotted && targetIsSpotted)
         {
-            angleInDegrees += transform.eulerAngles.y;
+            // L'ennemi est alerté !
+            StartCoroutine(SpotedAnimation());
         }
 
-        return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0f, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
+
+        // Le joueur n'est plus repéré
+        if (!targetIsSpotted)
+            actualTarget = null;
+
+        return targetIsSpotted;
     }
 
 
     // Dessine le champ de vision
-    //
     void DrawFieldOfView()
     {
 
@@ -156,7 +152,7 @@ public class FieldOfView : MonoBehaviour
         }
 
         // Génération du mesh entre chaque ray
-        // (plus d'infos, voir => https://www.youtube.com/watch?v=73Dc5JTCmKI&t=460s)
+        // Plus d'infos : voir => https://www.youtube.com/watch?v=73Dc5JTCmKI&t=460s
         int vertexCount = viewPoints.Count + 1;
         Vector3[] vertices = new Vector3[vertexCount];
         int[] triangles = new int[(vertexCount - 2) * 3];
@@ -182,6 +178,39 @@ public class FieldOfView : MonoBehaviour
         viewMesh.triangles = triangles;
         viewMesh.RecalculateNormals();
     }
+
+
+    public void LookAtTarget()
+    {
+        /*
+        Vector3 dirToTarget = (actualTarget.transform.position - transform.position).normalized;
+        Debug.Log("Look at  " + dirToTarget);
+        float angle = Mathf.Atan2(dirToTarget.z, dirToTarget.x) * Mathf.Rad2Deg - 90f;
+        Debug.Log(angle);
+        transform.rotation = Quaternion.Euler(0f, -angle, 0f);*/
+
+        transform.DODynamicLookAt(actualTarget.transform.position, 0.2f);
+
+    }
+
+    private IEnumerator SpotedAnimation()
+    {
+        Debug.Log("Animation");
+        /*
+        transform.DOScale(new Vector3(1.3f, 1.3f, 1.3f), 0.15f).SetEase(Ease.OutCirc);
+        yield return new WaitForSeconds(0.2f);
+        transform.DOScale(new Vector3(1f, 1f, 1f), 0.2f).SetEase(Ease.InQuint);
+        */
+        transform.DOMoveY(transform.position.y + 0.8f, 0.1f);
+        yield return new WaitForSeconds(0.1f);
+        transform.DOMoveY(transform.position.y - 0.8f, 0.3f).SetEase(Ease.OutBounce);
+        yield return new WaitForSeconds(0.3f);
+
+    }
+
+
+
+    // ---------------------------  OUTILS   -------------------------------//
 
 
     // Permet de trouver les "bords" des obstacles détectés par le champ de vision
@@ -217,6 +246,19 @@ public class FieldOfView : MonoBehaviour
 
 
 
+    // Renvoie une direction (Vector3) en partant d'un angle donné (degrés)
+    public Vector3 DirFromAngle(float angleInDegrees, bool angleIsGlobal)
+    {
+        if (!angleIsGlobal)
+        {
+            angleInDegrees += transform.eulerAngles.y;
+        }
+
+        return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0f, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
+    }
+
+
+
     // Trace un Raycast à l'angle donné % au personnage
     // & stock certaines informations dans un struct ViewCastInfo
     public ViewCastInfo ViewCast(float globalAngle)
@@ -233,6 +275,8 @@ public class FieldOfView : MonoBehaviour
             return new ViewCastInfo(false, transform.position + dir* viewRaduis, viewRaduis, globalAngle);
         }
     }
+
+
 
 
 
