@@ -26,12 +26,6 @@ public class FieldOfView : MonoBehaviour
     public MeshFilter viewMeshFilter;
     Mesh viewMesh;
 
-    [Header("Target trouvée")]
-    private GameObject actualTarget;
-    private bool targetIsSpotted;
-    private bool lastTargetIsSpotted;
-
-
     public void Start()
     {
         viewMesh = new Mesh();
@@ -46,23 +40,12 @@ public class FieldOfView : MonoBehaviour
     }
 
 
-    /*
-    IEnumerator FindTargetWithDelay(float delay)
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(delay);
-            FindVisibleTargets();
-        }
-    }*/
-
-
     // Trouve toutes les cibles autours de lui
-    public bool FindVisibleTargets()
+    public GameObject FindVisibleTargets()
     {
         visibleTargets.Clear();
 
-        // Detection dans un périmètre circulaire
+        // Detection dans un périmètre circulaire des objets avec le mask "Player"
         Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRaduis, targetMask);
 
         for(int i=0; i < targetsInViewRadius.Length; i++)
@@ -83,29 +66,14 @@ public class FieldOfView : MonoBehaviour
                 {
                     // La cible est repérée.
                     visibleTargets.Add(targetTransform);
-                    actualTarget = targetTransform.gameObject;
                 }
             }
         }
 
-        // Actualise l'état de l'IA
-        lastTargetIsSpotted = targetIsSpotted;
-        targetIsSpotted = visibleTargets.Count == 1;
-
-
-        // La frame ou le joueur entre dans le champ de vision
-        if(targetIsSpotted != lastTargetIsSpotted && targetIsSpotted)
-        {
-            // L'ennemi est alerté !
-            StartCoroutine(SpotedAnimation());
-        }
-
-
-        // Le joueur n'est plus repéré
-        if (!targetIsSpotted)
-            actualTarget = null;
-
-        return targetIsSpotted;
+        if (visibleTargets.Count > 0)
+            return visibleTargets[0].gameObject;
+        else
+            return null;
     }
 
 
@@ -179,35 +147,21 @@ public class FieldOfView : MonoBehaviour
         viewMesh.RecalculateNormals();
     }
 
-
-    public void LookAtTarget()
-    {
-        /*
-        Vector3 dirToTarget = (actualTarget.transform.position - transform.position).normalized;
-        Debug.Log("Look at  " + dirToTarget);
-        float angle = Mathf.Atan2(dirToTarget.z, dirToTarget.x) * Mathf.Rad2Deg - 90f;
-        Debug.Log(angle);
-        transform.rotation = Quaternion.Euler(0f, -angle, 0f);*/
-
-        transform.DODynamicLookAt(actualTarget.transform.position, 0.2f);
-
-    }
-
     private IEnumerator SpotedAnimation()
     {
         Debug.Log("Animation");
-        /*
-        transform.DOScale(new Vector3(1.3f, 1.3f, 1.3f), 0.15f).SetEase(Ease.OutCirc);
-        yield return new WaitForSeconds(0.2f);
-        transform.DOScale(new Vector3(1f, 1f, 1f), 0.2f).SetEase(Ease.InQuint);
-        */
         transform.DOMoveY(transform.position.y + 0.8f, 0.1f);
         yield return new WaitForSeconds(0.1f);
         transform.DOMoveY(transform.position.y - 0.8f, 0.3f).SetEase(Ease.OutBounce);
         yield return new WaitForSeconds(0.3f);
-
     }
 
+    private IEnumerator PlayerLeaveFow(Transform targetTransform)
+    {
+        Debug.Log("Attente...");
+        transform.DOLookAt(targetTransform.position, 3f);
+        yield return new WaitForSeconds(3f);
+    }
 
 
     // ---------------------------  OUTILS   -------------------------------//
